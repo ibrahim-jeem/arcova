@@ -6,9 +6,9 @@ A responsive static website built with HTML, CSS and vanilla JavaScript. No fram
 Open `index.html` in a browser, or use the branch preview link shared with the project owner. The design uses image assets already stored in `img/` and relative image paths.
 
 ## Editing guide
-- **Text and page sections:** `index.html`
+- **Text and page sections:** each page has its own HTML file (`index.html`, `about.html`, `services.html`, `projects.html`, `team.html`, `contact.html`). Client cards are displayed in a slider on the home page.
 - **Colours, typography, spacing and responsive layout:** `style.css`
-- **Mobile navigation, project filters and enquiry email:** `script.js`
+- **Mobile navigation, project filters, homepage client slider, pointer spotlight and enquiry email:** `script.js`
 - **Photography:** keep the existing `img/` directory and filenames, or change the relative `src` paths in `index.html`.
 
 ## Before public launch
