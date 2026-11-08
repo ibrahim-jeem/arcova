@@ -79,11 +79,11 @@
       }
     };
 
-    slider.querySelector('[data-slide="prev"]')?.addEventListener("click", () => {
+    document.querySelector('.client-slider-controls [data-slide="prev"]')?.addEventListener("click", () => {
       goTo(currentIndex <= 0 ? lastIndex() : currentIndex - 1);
       startAutoSlide();
     });
-    slider.querySelector('[data-slide="next"]')?.addEventListener("click", () => {
+    document.querySelector('.client-slider-controls [data-slide="next"]')?.addEventListener("click", () => {
       goTo(currentIndex >= lastIndex() ? 0 : currentIndex + 1);
       startAutoSlide();
     });
