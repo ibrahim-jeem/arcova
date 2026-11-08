@@ -1,113 +1,107 @@
-// ARCOVA interactions: mobile navigation, project filters, client carousel and enquiry email.
+// ARCOVA interactions: mobile navigation, project filters, infinite client carousel and enquiry email.
 (() => {
   const menuButton = document.querySelector(".menu-toggle");
   const menu = document.querySelector(".menu");
-
-  // Mobile navigation
   menuButton?.addEventListener("click", () => {
     const isOpen = menu.classList.toggle("open");
     menuButton.setAttribute("aria-expanded", String(isOpen));
     menuButton.textContent = isOpen ? "×" : "☰";
   });
+  menu?.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+    menu.classList.remove("open");
+    menuButton?.setAttribute("aria-expanded", "false");
+    if (menuButton) menuButton.textContent = "☰";
+  }));
 
-  menu?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      menu.classList.remove("open");
-      menuButton?.setAttribute("aria-expanded", "false");
-      if (menuButton) menuButton.textContent = "☰";
-    });
-  });
-
-  // Project category filters
   const filterButtons = document.querySelectorAll("[data-filter]");
   const projectCards = document.querySelectorAll(".projects [data-category]");
+  filterButtons.forEach(button => button.addEventListener("click", () => {
+    const selected = button.dataset.filter;
+    filterButtons.forEach(item => item.classList.toggle("active", item === button));
+    projectCards.forEach(card => { card.hidden = selected !== "all" && card.dataset.category !== selected; });
+  }));
 
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const selectedFilter = button.dataset.filter;
-      filterButtons.forEach((item) => item.classList.toggle("active", item === button));
-      projectCards.forEach((card) => {
-        card.hidden = selectedFilter !== "all" && card.dataset.category !== selectedFilter;
-      });
-    });
-  });
-
-  // Visible cursor-following spotlight on desktop screens.
-  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    document.addEventListener("pointermove", (event) => {
-      document.documentElement.style.setProperty("--pointer-x", event.clientX + "px");
-      document.documentElement.style.setProperty("--pointer-y", event.clientY + "px");
-      document.body.classList.add("pointer-active");
-    });
-    document.documentElement.addEventListener("pointerleave", () => {
-      document.body.classList.remove("pointer-active");
-    });
-  }
-
-  // Client carousel: 3 visible cards on desktop, 2 on tablet, 1 on mobile.
+  // Seamless, continuously looping client carousel.
   const slider = document.querySelector("[data-slider]");
   const track = document.querySelector("#client-track");
-
   if (slider && track) {
-    const cards = Array.from(track.children);
-    let currentIndex = 0;
-    let autoSlideTimer;
+    const originals = Array.from(track.children);
+    const prev = document.querySelector('[data-slide="prev"]');
+    const next = document.querySelector('[data-slide="next"]');
+    let index = 0, visible = 3, step = 0, timer = null, resizeFrame = null;
 
-    const visibleCount = () => {
-      if (window.matchMedia("(max-width: 580px)").matches) return 1;
-      if (window.matchMedia("(max-width: 900px)").matches) return 2;
-      return 3;
+    const visibleCount = () => matchMedia("(max-width: 580px)").matches ? 1 :
+      matchMedia("(max-width: 900px)").matches ? 2 : 3;
+
+    const position = (animate = true) => {
+      track.style.transition = animate ? "" : "none";
+      track.style.transform = "translate3d(-" + (index * step) + "px,0,0)";
     };
 
-    const lastIndex = () => Math.max(0, cards.length - visibleCount());
-
-    const goTo = (requestedIndex) => {
-      currentIndex = Math.max(0, Math.min(requestedIndex, lastIndex()));
-      if (!cards.length) return;
-      const cardWidth = cards[0].getBoundingClientRect().width;
-      const gap = Number.parseFloat(getComputedStyle(track).gap) || 0;
-      track.style.transform = "translateX(-" + currentIndex * (cardWidth + gap) + "px)";
-    };
-
-    const stopAutoSlide = () => window.clearInterval(autoSlideTimer);
-    const startAutoSlide = () => {
-      stopAutoSlide();
-      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        autoSlideTimer = window.setInterval(() => {
-          goTo(currentIndex >= lastIndex() ? 0 : currentIndex + 1);
-        }, 3500);
+    const start = () => {
+      clearInterval(timer);
+      if (!document.hidden && originals.length > visible &&
+          !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        timer = setInterval(() => move(1), 2800);
       }
     };
 
-    document.querySelector('.client-slider-controls [data-slide="prev"]')?.addEventListener("click", () => {
-      goTo(currentIndex <= 0 ? lastIndex() : currentIndex - 1);
-      startAutoSlide();
-    });
-    document.querySelector('.client-slider-controls [data-slide="next"]')?.addEventListener("click", () => {
-      goTo(currentIndex >= lastIndex() ? 0 : currentIndex + 1);
-      startAutoSlide();
-    });
+    const build = () => {
+      clearInterval(timer);
+      visible = visibleCount();
+      index = 0;
+      track.replaceChildren(...originals.map(card => card.cloneNode(true)));
+      for (let i = 0; i < visible; i++) {
+        track.appendChild(originals[i % originals.length].cloneNode(true));
+      }
+      const first = track.firstElementChild;
+      if (!first) return;
+      step = first.getBoundingClientRect().width + (parseFloat(getComputedStyle(track).columnGap) || 0);
+      position(false);
+      requestAnimationFrame(() => { track.style.transition = ""; start(); });
+    };
 
-    slider.addEventListener("mouseenter", stopAutoSlide);
-    slider.addEventListener("mouseleave", startAutoSlide);
-    slider.addEventListener("focusin", stopAutoSlide);
-    slider.addEventListener("focusout", startAutoSlide);
-    window.addEventListener("resize", () => goTo(currentIndex));
-    goTo(0);
-    startAutoSlide();
+    function move(direction) {
+      if (originals.length <= visible) return;
+      index += direction;
+      if (index < 0) {
+        index = originals.length - 1;
+        position(false);
+        requestAnimationFrame(() => {
+          track.style.transition = "";
+          index = originals.length - 1;
+          position(true);
+        });
+      } else {
+        position(true);
+      }
+    }
+
+    track.addEventListener("transitionend", event => {
+      if (event.propertyName === "transform" && index >= originals.length) {
+        index = 0;
+        position(false);
+        requestAnimationFrame(() => { track.style.transition = ""; });
+      }
+    });
+    prev?.addEventListener("click", () => { move(-1); start(); });
+    next?.addEventListener("click", () => { move(1); start(); });
+    document.addEventListener("visibilitychange", start);
+    window.addEventListener("resize", () => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(build);
+    });
+    build();
   }
 
   // Enquiry form opens a pre-filled email; no data is stored on this website.
-  document.querySelector("#enquiry")?.addEventListener("submit", (event) => {
+  document.querySelector("#enquiry")?.addEventListener("submit", event => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const data = new FormData(event.currentTarget);
     const subject = encodeURIComponent("Website enquiry — ARCOVA");
-    const body = encodeURIComponent(
-      "Name: " + formData.get("name") +
-      "\nEmail: " + formData.get("email") +
-      "\nService: " + formData.get("service") +
-      "\n\nProject details:\n" + formData.get("message")
-    );
+    const body = encodeURIComponent("Name: " + data.get("name") +
+      "\nEmail: " + data.get("email") + "\nService: " + data.get("service") +
+      "\n\nProject details:\n" + data.get("message"));
     window.location.href = "mailto:renterprise.fbd@gmail.com?subject=" + subject + "&body=" + body;
   });
 })();
