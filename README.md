@@ -1,18 +1,18 @@
-# ARCOVA website
+# ARCOVA Website Redesign
 
-Files: index.html, about.html, services.html, projects.html, clients.html, team.html, contact.html + style.css + script.js.
-Keep all files in the same folder.
+A responsive static website built with HTML, CSS and vanilla JavaScript. No framework, package manager or build step is required.
 
-## Edit guide
-- Colors: style.css, last block "ROYAL DARK + GOLD THEME" (top of that block, :root variables).
-- Texts, services, projects, team, clients, project table: script.js, top block "CONTENT (edit here)".
-- Page-only texts (hero, about text, contact details): the matching .html file.
-- Contact details also appear in the footer of every .html file.
+## Preview
+Open `index.html` in a browser, or use the branch preview link shared with the project owner. The design uses image assets already stored in `img/` and relative image paths.
 
-## Host on GitHub Pages
-1. Create a repository, upload all files (index.html at the top level).
-2. Settings > Pages > Source: "Deploy from a branch" > main / (root) > Save.
-3. Your site appears at https://USERNAME.github.io/REPO/ after a minute.
+## Editing guide
+- **Text and page sections:** `index.html`
+- **Colours, typography, spacing and responsive layout:** `style.css`
+- **Mobile navigation, project filters and enquiry email:** `script.js`
+- **Photography:** keep the existing `img/` directory and filenames, or change the relative `src` paths in `index.html`.
 
-## WordPress
-Upload the folder to your hosting (File Manager/FTP, e.g. /public_html/arcova/) and open it, or ask for a WordPress theme version.
+## Before public launch
+Verify project descriptions, dates, client names, team credentials, contact information and image permissions. The enquiry form opens the visitor's email application; it does not store submissions online. Connect a form service or CRM if online storage is required.
+
+## Stack
+HTML5 · CSS3 · Vanilla JavaScript
