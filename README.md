@@ -1,18 +1,55 @@
-# ARCOVA Website Redesign
+# ARCOVA Website
 
-A responsive static website built with HTML, CSS and vanilla JavaScript. No framework, package manager or build step is required.
+A responsive company website built with plain HTML, CSS and JavaScript. There is no framework, build process or package manager.
 
-## Preview
-Open `index.html` in a browser, or use the branch preview link shared with the project owner. The design uses image assets already stored in `img/` and relative image paths.
+## Project files
 
-## Editing guide
-- **Text and page sections:** each page has its own HTML file (`index.html`, `about.html`, `services.html`, `projects.html`, `team.html`, `contact.html`). Client cards are displayed in a slider on the home page.
-- **Colours, typography, spacing and responsive layout:** `style.css`
-- **Mobile navigation, project filters, homepage client slider, pointer spotlight and enquiry email:** `script.js`
-- **Photography:** keep the existing `img/` directory and filenames, or change the relative `src` paths in `index.html`.
+- `index.html` — homepage and client carousel.
+- `about.html` — company introduction and approach.
+- `services.html` — service descriptions.
+- `projects.html` — project gallery and category filters.
+- `team.html` — team profiles.
+- `contact.html` — contact details and enquiry form.
+- `style.css` — all colours, fonts, spacing, layout and responsive styles.
+- `script.js` — mobile menu, project filters, automatic client carousel and email enquiry.
+- `img/` — logo and project images.
 
-## Before public launch
-Verify project descriptions, dates, client names, team credentials, contact information and image permissions. The enquiry form opens the visitor's email application; it does not store submissions online. Connect a form service or CRM if online storage is required.
+## How to make common changes
 
-## Stack
+### Change the logo
+Replace `img/Logo_Arcova.png` with your new logo, keeping the same filename. The header and footer on every page use this file.
+
+### Change text
+Open the relevant HTML page and edit the text inside its section. Each page is separate, so a change to one page does not automatically change the others.
+
+### Change fonts
+Open `style.css` and find the `:root` variables near the top. The current font choices are:
+- Headings: Lora
+- Body text and interface: Source Sans 3
+
+The Google Fonts import is in the `<head>` of each HTML page.
+
+### Change colours
+Edit the colour variables in `:root` near the top of `style.css`, such as `--navy`, `--gold`, `--paper` and `--ink`.
+
+### Change spacing and layout
+Most layout and responsive rules are in `style.css`. The media queries near the bottom control tablet and mobile layouts.
+
+### Change client names or carousel speed
+Edit the client cards in the client section of `index.html`. In `script.js`, change the `2800` value to adjust the automatic slide interval in milliseconds.
+
+### Change project cards or categories
+Edit the project cards and their `data-category` values in `projects.html`. The category buttons use the same category names.
+
+### Change contact information
+Update the address, email and phone number in the footer of each HTML page and in `contact.html`. The enquiry email destination is also set in `script.js`.
+
+## Important notes
+
+- The enquiry form opens the visitor's email application. It does not store submissions online.
+- Before publishing, verify project details, client names, team credentials, contact information and image permissions.
+- Keep image filenames in the `img/` folder unchanged unless you also update their paths in the HTML.
+
+## Technology
+
 HTML5 · CSS3 · Vanilla JavaScript
